@@ -1,0 +1,64 @@
+[tool.poetry]
+name = "autopages"
+version = "0.5.0"
+description = "Create multiple unique pdfs from a base pptx template and a list of data"
+authors = ["Christopher Currin <chris.crisur@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+python-pptx = "^0.6.21"
+docker = "^6.0.1"
+pd2ppt = {git = "https://github.com/robintw/PandasToPowerpoint.git"}
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+# flake8 = "^6.0.0"
+flakeheaven = "^3.2.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 78
+target-version = ['py37']
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+  | foo.py           # also separately exclude a file named foo.py in
+                     # the root of the project
+)
+'''
+
+[tool.flakeheaven]
+# optionally inherit from remote config (or local if you want)
+# base = "https://raw.githubusercontent.com/flakeheaven/flakeheaven/main/pyproject.toml"
+exclude = ["README.md", "setup.py", "README.rst", ".venv", ".git"]
+# make output nice
+# format = "grouped"
+# 80 chars aren't enough in 21 century
+max_line_length = 120
+# show line of source code in output
+# show_source = true
+
+[tool.flakeheaven.plugins]
+pycodestyle = ["+*"]
+pyflakes = ["+*"]
+flake8-commas = ["+*"]
+flake8-quotes = ["+*"]
+pylint = ["+F*", "+E*", "-E0611", "-E1101", "-E0401", "-E1102", "-E1123"]
