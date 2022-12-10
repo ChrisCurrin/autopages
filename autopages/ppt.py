@@ -2,10 +2,8 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 from zipfile import BadZipFile
 
-from autopages.topdf import ppt_to_pdf
 
 import pptx
 
@@ -22,7 +20,7 @@ FIGSIZE_WIDE = (7.13, 1.8)
 def create_ppt(
     template_name: str | Path,
     output_name: str | Path,
-    data: dict[str, str | dict[str, str]],
+    data: dict[str, dict[str, str]] | dict[str, str],
 ):
     """Take the input powerpoint file and use it as the template for the output
     file.
@@ -46,6 +44,8 @@ def create_ppt(
             }
 
         if index >= len(prs.slides):
+            if "layout" not in page_data:
+                page_data["layout"] = 0
             slide = prs.slides.add_slide(
                 prs.slide_layouts[int(str(page_data["layout"]))]
             )
@@ -74,6 +74,7 @@ def create_ppt(
                 p, pptx.shapes.placeholder.SlidePlaceholder  # type: ignore
             )
             and p not in pics
+            and p != title
         ]
 
         content = page_data["content"]
@@ -126,9 +127,7 @@ def create_ppt(
         #     pic.insert_picture(fig)
 
         # add content
-        for block, text in zip(
-            content_block, content
-        ):
+        for block, text in zip(content_block, content):
             block.text = text
 
         # Add the date to the slide

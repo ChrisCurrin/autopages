@@ -33,6 +33,13 @@ def parse_args():
         "outfile",
         help="Output powerpoint report file",
     )
+    # add single-doc flag
+    parser.add_argument(
+        "-s",
+        "--single",
+        action="store_true",
+        help="Create a single document instead of one document per data item",
+    )
     # add convert flag
     parser.add_argument(
         "-c",
@@ -58,6 +65,8 @@ if __name__ == "__main__":
 
     template_name = Path(args.template.name).resolve()
 
+    all_data: list[dict[str, dict[str, str]] | dict[str, str]]
+
     if args.data.name.endswith(".json"):
         # read json file
         try:
@@ -70,9 +79,7 @@ if __name__ == "__main__":
 
         # read csv file
         try:
-            all_data: list[dict[str, str]] = pd.read_csv(
-                args.data.name, sep=";"
-            ).to_dict(
+            all_data = pd.read_csv(args.data.name, sep=",").to_dict(
                 orient="records"
             )  # type: ignore
         except pd.errors.ParserError as e:
@@ -94,6 +101,16 @@ if __name__ == "__main__":
 
     if not str(output_name).endswith(".pptx"):
         output_name = f"{output_name}.pptx"
+
+    if args.single:
+        # convert all_data list to dict where key is the value for the "Title" key
+        # check if "Title" is in the data
+        if "title" not in all_data[0]:
+            logger.error(
+                "Single document mode requires the data to have a 'title' key"
+            )
+            exit(1)
+        all_data = [{data["title"]: data for data in all_data}]
 
     for i, data in enumerate(all_data):
         output_name_item = (

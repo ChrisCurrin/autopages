@@ -8,7 +8,6 @@ import argparse
 import logging
 from pathlib import Path
 
-from autopages.ppt import create_ppt
 from autopages.topdf import ppt_to_pdf
 
 logger = logging.getLogger(__name__)
