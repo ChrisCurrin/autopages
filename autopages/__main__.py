@@ -31,7 +31,10 @@ def parse_args():
 
     parser.add_argument(
         "outfile",
-        help="Output powerpoint report file",
+        help="""
+        Output powerpoint report file. Include the extension '.pdf' to convert to pdf automatically.
+        Name can include 'content' and 'title' to use the content and title from the data.
+        """,
     )
     # add single-doc flag
     parser.add_argument(
@@ -55,6 +58,13 @@ def parse_args():
         action="store_true",
         help="Delete the pptx file after converting to pdf",
     )
+    # add --no-titles flag
+    parser.add_argument(
+        "--no-titles",
+        action="store_true",
+        help="Do not use the titles in the data",
+    )
+
     return parser.parse_args()
 
 
@@ -123,6 +133,7 @@ if __name__ == "__main__":
             template_name,
             output_name_item,
             data,
+            no_titles=args.no_titles,
         )
 
         # convert to pdf if needed and delete ppt file afterwards (optional)

@@ -21,6 +21,7 @@ def create_ppt(
     template_name: str | Path,
     output_name: str | Path,
     data: dict[str, dict[str, str]] | dict[str, str],
+    no_titles: bool = False,
 ):
     """Take the input powerpoint file and use it as the template for the output
     file.
@@ -116,8 +117,14 @@ def create_ppt(
         ###########################################################################
         # add content to the placeholders
         ###########################################################################
-        if title is not None:
-            title.text = page_data["title"]
+        page_data_title = page_data.get("title")
+        if title is not None and not no_titles:
+            for ignore in ["Unnamed", "None"]:
+                if ignore in page_data_title:
+                    break
+            else:
+                # no breaking
+                title.text = page_data["title"]
 
         # TODO: add support for adding figures
         # # Add the figures to the slide
@@ -144,6 +151,15 @@ def create_ppt(
     ###########################################################################
     # save the presentation (make sure directory exists)
     ###########################################################################
+
+    if "content" in str(output_name):
+        output_name = str(output_name).replace(
+            "content", page_data["content"]
+        )
+    if "title" in str(output_name):
+        output_name = str(output_name).replace(
+            "title", page_data["title"]
+        )
 
     Path(output_name).parent.mkdir(parents=True, exist_ok=True)
     prs.save(output_name)
